@@ -1,6 +1,9 @@
 import 'package:assyifa_chatbot/models/journal_model.dart';
+import 'package:assyifa_chatbot/models/track.dart';
+import 'package:assyifa_chatbot/services/database.dart';
 import 'package:assyifa_chatbot/shared/loading.dart';
 import 'package:assyifa_chatbot/views/journal/journal.dart';
+import 'package:assyifa_chatbot/views/screens/timeline/emoticon/detail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +18,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
-
   @override
   bool get wantKeepAlive => true;
 
@@ -68,6 +70,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> _journalsStream = Firestore.instance
         .collection('journal')
@@ -108,9 +111,8 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
           for (int i = 0; i < snapshot.data.documents.length; i++) {
             final DocumentSnapshot document = snapshot.data.documents[i];
-            tempList.add(JournalModel(
-                document.documentID.toString(), document['title'],
-                document['content']));
+            tempList.add(JournalModel(document.documentID.toString(),
+                document['title'], document['content']));
           }
 
           _isLoading = false;
@@ -121,162 +123,181 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         return _isLoading
             ? Loading()
             : SingleChildScrollView(
-          child: Container(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  decoration: BoxDecoration(
-                      color: Color(0xFF39A2DB),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30))),
-                  child: Row(
+                child: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
+                      Container(
+                        padding:
+                            EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                        decoration: BoxDecoration(
+                            color: Color(0xFF39A2DB),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(30),
+                                bottomRight: Radius.circular(30))),
+                        child: Row(
+                          children: [
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child: Text('Selamat Datang di As-Syifa!',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1))),
+                            Flexible(
+                                fit: FlexFit.loose,
+                                child: Image.asset('assets/hello_home.png'))
+                          ],
+                        ),
+                      ),
                       Flexible(
                           fit: FlexFit.loose,
-                          child: Text('Selamat Datang di As-Syifa!',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1))),
-                      Flexible(
-                          fit: FlexFit.loose,
-                          child: Image.asset('assets/hello_home.png'))
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(height: 20),
+                                Text('Bagaimana perasaanmu saat ini?',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        letterSpacing: 1)),
+                                SizedBox(height: 16),
+                                Row(
+                                  children: List.generate(
+                                      emotionNameList.length, (index) {
+                                    return Flexible(
+                                      fit: FlexFit.loose,
+                                      child: Column(
+                                        children: [
+                                          GestureDetector(
+                                            onTap: () async {
+                                              await _setMood(
+                                                  emotionNameList[index]);
+                                              Track track = Track(
+                                                title: emotionNameList[index],
+                                              );
+
+                                              await DatabaseService(
+                                                      uid: this._uid)
+                                                  .addTrack(track);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      Detail(),
+                                                ),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              margin: EdgeInsets.symmetric(
+                                                  horizontal: 5),
+                                              decoration: BoxDecoration(
+                                                  color: getButtonColor(
+                                                      emotionNameList[index]),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(10))),
+                                              child: Center(
+                                                child: Image.asset(
+                                                    'assets/${emotionImageList[index]}'),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(emotionNameList[index],
+                                              style: TextStyle(fontSize: 12))
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                ),
+                              ],
+                            ),
+                          )),
+                      SizedBox(height: 25),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Jurnalmu',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        letterSpacing: 1)),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Journal()));
+                                  },
+                                  child: Text('Selengkapnya',
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600])),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Column(
+                              children:
+                                  List.generate(journalList.length, (index) {
+                                JournalModel journal = journalList[index];
+
+                                final key = encrypt.Key.fromLength(32);
+                                final iv = encrypt.IV.fromLength(8);
+                                final encryptor =
+                                    encrypt.Encrypter(encrypt.Salsa20(key));
+
+                                encrypt.Encrypted encryptedTitle =
+                                    encrypt.Encrypted.fromBase64(journal.title);
+                                String journalTitle =
+                                    encryptor.decrypt(encryptedTitle, iv: iv);
+
+                                return Card(
+                                  child: InkWell(
+                                    onTap: () {},
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: Text(journalTitle,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 15)),
+                                          ),
+                                          Icon(Icons.arrow_forward_ios,
+                                              size: 16)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                            SizedBox(height: 10),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
-                Flexible(
-                    fit: FlexFit.loose,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(height: 20),
-                          Text('Bagaimana perasaanmu saat ini?',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  letterSpacing: 1)),
-                          SizedBox(height: 16),
-                          Row(
-                            children: List.generate(emotionNameList.length,
-                                    (index) {
-                                  return Flexible(
-                                    fit: FlexFit.loose,
-                                    child: Column(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () async => await _setMood(
-                                              emotionNameList[index]),
-                                          child: Container(
-                                            padding: EdgeInsets.all(10),
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 5),
-                                            decoration: BoxDecoration(
-                                                color: getButtonColor(
-                                                    emotionNameList[index]),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(10))),
-                                            child: Center(
-                                              child: Image.asset(
-                                                  'assets/${emotionImageList[index]}'),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 5),
-                                        Text(emotionNameList[index],
-                                            style: TextStyle(fontSize: 12))
-                                      ],
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    )),
-                SizedBox(height: 25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Jurnalmu',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  letterSpacing: 1)),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Journal()));
-                            },
-                            child: Text('Selengkapnya',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey[600])),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                      Column(
-                        children: List.generate(journalList.length, (index) {
-                          JournalModel journal = journalList[index];
-
-                          final key = encrypt.Key.fromLength(32);
-                          final iv = encrypt.IV.fromLength(8);
-                          final encryptor = encrypt.Encrypter(encrypt.Salsa20(key));
-
-                          encrypt.Encrypted encryptedTitle = encrypt.Encrypted.fromBase64(journal.title);
-                          String journalTitle = encryptor.decrypt(encryptedTitle, iv: iv);
-
-                          return Card(
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Journal()));
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(journalTitle,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15)),
-                                    ),
-                                    Icon(Icons.arrow_forward_ios, size: 16)
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
+              );
       },
     );
   }

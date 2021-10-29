@@ -10,7 +10,6 @@ import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:metadata_fetch/metadata_fetch.dart' as MetadataFetch;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ChatBot extends StatefulWidget {
   const ChatBot({Key key}) : super(key: key);
@@ -19,8 +18,8 @@ class ChatBot extends StatefulWidget {
   _ChatBotState createState() => _ChatBotState();
 }
 
-class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<ChatBot> {
-
+class _ChatBotState extends State<ChatBot>
+    with AutomaticKeepAliveClientMixin<ChatBot> {
   @override
   bool get wantKeepAlive => true;
 
@@ -56,7 +55,10 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
         "message": aiResponse.getListMessage()[0]["text"]["text"][0].toString()
       });
     });
-    ChatModel chatModel = ChatModel(0, aiResponse.getListMessage()[0]["text"]["text"][0].toString(), DateTime.now());
+    ChatModel chatModel = ChatModel(
+        0,
+        aiResponse.getListMessage()[0]["text"]["text"][0].toString(),
+        DateTime.now());
     await DatabaseService(uid: _uid).addChat(chatModel);
     print(aiResponse.getListMessage()[0]["text"]["text"][0].toString());
   }
@@ -74,8 +76,10 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
   void sendChatToBot([String defaultMessage, bool isTest = false]) async {
     String message = _messageInsert.text;
     if (isTest) {
-      if (defaultMessage.toLowerCase() == 'biasa') message = 'halo';
-      else message = 'aku $defaultMessage';
+      if (defaultMessage.toLowerCase() == 'biasa')
+        message = 'halo';
+      else
+        message = 'aku $defaultMessage';
     }
     if (message.isEmpty) {
       print("empty message");
@@ -98,13 +102,14 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
     //Return String
     String mood = prefs.getString('mood');
     _mood = mood;
-    if (mood.toLowerCase() == 'biasa') sendChatToBot('halo', true);
-    else sendChatToBot('aku ${_mood.toLowerCase()}', true);
+    if (mood.toLowerCase() == 'biasa')
+      sendChatToBot('halo', true);
+    else
+      sendChatToBot('aku ${_mood.toLowerCase()}', true);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getMood();
     setCurrentUserData();
@@ -113,7 +118,12 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
 
   @override
   Widget build(BuildContext context) {
-    Query users = Firestore.instance.collection('chats').document(_uid).collection('chats').orderBy('created_at', descending: false);
+    super.build(context);
+    Query users = Firestore.instance
+        .collection('chats')
+        .document(_uid)
+        .collection('chats')
+        .orderBy('created_at', descending: false);
 
     return StreamBuilder<QuerySnapshot>(
       stream: users.snapshots(),
@@ -122,7 +132,8 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
         if (!snapshot.hasData) return Loading();
         for (int i = 0; i < snapshot.data.documents.length; i++) {
           final DocumentSnapshot document = snapshot.data.documents[i];
-            tempMessages.insert(0, {"data": document['data'], "message": document['message']});
+          tempMessages.insert(
+              0, {"data": document['data'], "message": document['message']});
         }
         _messages = tempMessages;
         return Container(
@@ -201,100 +212,125 @@ class _ChatBotState extends State<ChatBot> with AutomaticKeepAliveClientMixin<Ch
     String url = regexUrl.stringMatch(message);
     if (url != null) message = message.replaceAll(url, '');
     return FutureBuilder(
-      future: getMetadata(url),
-      builder: (context, snapshot) {
-        String dataUrl;
-        String title;
-        if (snapshot.data != null) {
-          dataUrl = snapshot.data['image'];
-          title = snapshot.data['title'];
-          url = snapshot.data['url'];
-          if (url == null) url = '';
-        }
-        return Container(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          child: Row(
-            mainAxisAlignment:
-            data == 1 ? MainAxisAlignment.end : MainAxisAlignment.start,
-            children: [
-              data == 0
-                  ? Container(
-                height: 50,
-                width: 50,
-                child:
-                CircleAvatar(child: SvgPicture.asset('assets/robot.svg')),
-              )
-                  : Container(),
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Bubble(
-                    radius: Radius.circular(15.0),
-                    color: data == 0 ? Color(0xFF39A2DB) : Color(0xFF053742),
-                    elevation: 0.0,
-                    child: Padding(
-                      padding: EdgeInsets.all(2.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Flexible(
-                              child: Container(
-                                padding: EdgeInsets.only(left: 5, right: 5),
-                                constraints: BoxConstraints(maxWidth: 200),
-                                child: Text(
-                                  message,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              )),
-                          dataUrl == null
-                              ? Container()
-                              : Flexible(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+        future: getMetadata(url),
+        builder: (context, snapshot) {
+          String dataUrl;
+          String title;
+          if (snapshot.data != null) {
+            dataUrl = snapshot.data['image'];
+            title = snapshot.data['title'];
+            url = snapshot.data['url'];
+            if (url == null) url = '';
+          }
+          return Container(
+            padding: EdgeInsets.only(left: 20, right: 20),
+            child: Row(
+              mainAxisAlignment:
+                  data == 1 ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                data == 0
+                    ? Container(
+                        height: 50,
+                        width: 50,
+                        child: CircleAvatar(
+                            child: SvgPicture.asset('assets/robot.svg')),
+                      )
+                    : Container(),
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Bubble(
+                      radius: Radius.circular(15.0),
+                      color: data == 0 ? Color(0xFF39A2DB) : Color(0xFF053742),
+                      elevation: 0.0,
+                      child: Padding(
+                        padding: EdgeInsets.all(2.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Flexible(
+                                child: Container(
+                              padding: EdgeInsets.only(left: 5, right: 5),
+                              constraints: BoxConstraints(maxWidth: 200),
+                              child: Text(
+                                message,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )),
+                            dataUrl == null
+                                ? Container()
+                                : Flexible(
+                                    child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      dataUrl != null && url.contains('youtube') ? SizedBox(height: 10) : SizedBox(height: 0),
+                                      dataUrl != null && url.contains('youtube')
+                                          ? SizedBox(height: 10)
+                                          : SizedBox(height: 0),
                                       Container(
-                                        padding: EdgeInsets.only(left: 5, right: 5),
-                                        constraints: BoxConstraints(maxWidth: 200),
+                                        padding:
+                                            EdgeInsets.only(left: 5, right: 5),
+                                        constraints:
+                                            BoxConstraints(maxWidth: 200),
                                         child: GestureDetector(
-                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubePlayer(url: url))),
+                                          onTap: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      YoutubePlayer(url: url))),
                                           child: Text(
                                             title,
-                                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12),
                                           ),
                                         ),
                                       ),
-                                      dataUrl != null && url.contains('youtube') ? SizedBox(height: 10) : SizedBox(height: 0),
+                                      dataUrl != null && url.contains('youtube')
+                                          ? SizedBox(height: 10)
+                                          : SizedBox(height: 0),
                                       Container(
-                                          padding: EdgeInsets.only(left: 5, right: 5),
-                                          constraints: BoxConstraints(maxWidth: 200),
+                                          padding: EdgeInsets.only(
+                                              left: 5, right: 5),
+                                          constraints:
+                                              BoxConstraints(maxWidth: 200),
                                           child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(8.0),
-                                              child: InkWell(child: Image.network(dataUrl),
-                                                  onTap: () => url.contains('youtube') ? Navigator.push(context, MaterialPageRoute(builder: (context) => YoutubePlayer(url: url))) : print('URL invalid')
-                                              ),
-                                          )
-                                      ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: InkWell(
+                                                child: Image.network(dataUrl),
+                                                onTap: () => url
+                                                        .contains('youtube')
+                                                    ? Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                YoutubePlayer(
+                                                                    url: url)))
+                                                    : print('URL invalid')),
+                                          )),
                                       SizedBox(height: 10),
                                     ],
                                   )),
-                        ],
-                      ),
-                    )),
-              ),
-              data == 1
-                  ? Container(
-                height: 50,
-                width: 50,
-                child: CircleAvatar(
-                  backgroundImage: _photoUrl == null ? AssetImage("assets/default.jpg") : NetworkImage(_photoUrl),
+                          ],
+                        ),
+                      )),
                 ),
-              )
-                  : Container(),
-            ],
-          ),
-        );
-      }
-    );
+                data == 1
+                    ? Container(
+                        height: 50,
+                        width: 50,
+                        child: CircleAvatar(
+                          backgroundImage: _photoUrl == null
+                              ? AssetImage("assets/default.jpg")
+                              : NetworkImage(_photoUrl),
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+          );
+        });
   }
 }

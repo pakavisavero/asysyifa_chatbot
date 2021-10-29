@@ -16,7 +16,6 @@ class AddJournal extends StatefulWidget {
 }
 
 class _AddJournalState extends State<AddJournal> {
-
   TextEditingController _titleController;
   TextEditingController _contentController;
   bool _isLoading = false;
@@ -76,15 +75,17 @@ class _AddJournalState extends State<AddJournal> {
       final iv = encrypt.IV.fromLength(8);
       final encryptor = encrypt.Encrypter(encrypt.Salsa20(key));
 
-      String journalTitle = encryptor.encrypt(_titleController.text, iv: iv).base64;
-      String journalContent = encryptor.encrypt(_contentController.text, iv: iv).base64;
+      String journalTitle =
+          encryptor.encrypt(_titleController.text, iv: iv).base64;
+      String journalContent =
+          encryptor.encrypt(_contentController.text, iv: iv).base64;
 
       setState(() {
         _isLoading = true;
       });
 
       JournalModel journalModel =
-      JournalModel('', journalTitle, journalContent);
+          JournalModel('', journalTitle, journalContent);
       try {
         await DatabaseService(uid: this._uid).addJournal(journalModel);
         _showToast('Jurnal berhasil ditambahkan!', 'success');
@@ -109,7 +110,6 @@ class _AddJournalState extends State<AddJournal> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setCurrentUserData();
     fToast = FToast();
@@ -120,65 +120,69 @@ class _AddJournalState extends State<AddJournal> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading ? Loading() : Scaffold(
-      appBar: AppBar(
-        title: Text('Tambah Jurnal'),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: CustomButton('Tambah Jurnal', () {
-          addJournal();
-        }),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    hintText: 'Judul',
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                  ),
-                ),
-                TextFormField(
-                  controller: _contentController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  validator: (value) => value.toString().trim().isEmpty ? 'Jurnal tidak boleh kosong' : null,
-                  decoration: InputDecoration(
-                    hintText: 'Tuliskan jurnalmu di sini',
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                  ),
-                ),
-              ],
+    return _isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Tambah Jurnal'),
             ),
-          ),
-        ),
-      ),
-    );
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomButton('Tambah Jurnal', () {
+                addJournal();
+              }),
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        decoration: InputDecoration(
+                          hintText: 'Judul',
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: _contentController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        validator: (value) => value.toString().trim().isEmpty
+                            ? 'Jurnal tidak boleh kosong'
+                            : null,
+                        decoration: InputDecoration(
+                          hintText: 'Tuliskan jurnalmu di sini',
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 }

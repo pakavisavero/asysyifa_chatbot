@@ -9,11 +9,9 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<UserModel>(context);
     print('user: $user');
 
-    // return either Home or Authenticate Widget
     if (user == null) {
       return LandingPage();
     } else {

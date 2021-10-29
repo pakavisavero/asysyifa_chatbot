@@ -1,7 +1,8 @@
 import 'package:assyifa_chatbot/views/navigations/call_center.dart';
-import 'package:assyifa_chatbot/views/navigations/account.dart';
 import 'package:assyifa_chatbot/views/navigations/chatbot.dart';
 import 'package:assyifa_chatbot/views/navigations/home.dart';
+import 'package:assyifa_chatbot/views/screens/profile/profile_screen.dart';
+import 'package:assyifa_chatbot/views/screens/timeline/timeline.dart';
 import 'package:flutter/material.dart';
 
 /// This is the stateful widget that the main application instantiates.
@@ -17,12 +18,19 @@ class _HomeNavigationState extends State<HomeNavigation> {
   int _selectedIndex = 0;
   String _title = 'Beranda';
 
-  List<String> _navigationItems = ['Beranda', 'Chat Bot', 'Call Center', 'Akun'];
+  List<String> _navigationItems = [
+    'Beranda',
+    'Chat Bot',
+    'Timeline',
+    'Call Center',
+    'Profile'
+  ];
   List<Widget> _widgetOptions = <Widget>[
     Home(),
     ChatBot(),
+    Timeline(),
     CallCenter(),
-    Account(),
+    ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -54,7 +62,11 @@ class _HomeNavigationState extends State<HomeNavigation> {
               label: _navigationItems[1],
               backgroundColor: Colors.white),
           BottomNavigationBarItem(
-              icon: Icon(Icons.call),
+              icon: Icon(Icons.dashboard),
+              label: _navigationItems[2],
+              backgroundColor: Colors.white),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.phone),
               label: _navigationItems[2],
               backgroundColor: Colors.white),
           BottomNavigationBarItem(

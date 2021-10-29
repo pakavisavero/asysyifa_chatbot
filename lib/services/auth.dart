@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create user model object based on FirebaseUser
@@ -13,13 +12,16 @@ class AuthService {
 
   // auth change user stream
   Stream<UserModel> get user {
-    return _auth.onAuthStateChanged.map((FirebaseUser user) => _userFromFirebaseUser(user));
+    return _auth.onAuthStateChanged
+        .map((FirebaseUser user) => _userFromFirebaseUser(user));
   }
 
   // register with email & password
-  Future registerWithEmailAndPassword(String name, String email, String password) async {
+  Future registerWithEmailAndPassword(
+      String name, String email, String password) async {
     try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      AuthResult result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       FirebaseUser user = result.user;
       UserUpdateInfo userUpdateInfo = UserUpdateInfo();
       userUpdateInfo.displayName = name;
@@ -34,7 +36,8 @@ class AuthService {
   // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(email: email, password: password);
+      AuthResult result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
       FirebaseUser user = result.user;
       return _userFromFirebaseUser(user);
     } catch (e) {
@@ -49,7 +52,8 @@ class AuthService {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.getCredential(
@@ -58,7 +62,8 @@ class AuthService {
     );
 
     // Once signed in, return the UserCredential
-    AuthResult result = await FirebaseAuth.instance.signInWithCredential(credential);
+    AuthResult result =
+        await FirebaseAuth.instance.signInWithCredential(credential);
     FirebaseUser user = result.user;
     return _userFromFirebaseUser(user);
   }

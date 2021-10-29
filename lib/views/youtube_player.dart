@@ -12,7 +12,6 @@ class YoutubePlayer extends StatefulWidget {
 }
 
 class _YoutubePlayerState extends State<YoutubePlayer> {
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +26,6 @@ class _YoutubePlayerState extends State<YoutubePlayer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }

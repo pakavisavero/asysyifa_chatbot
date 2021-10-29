@@ -1,5 +1,6 @@
 import 'package:assyifa_chatbot/models/user_model.dart';
 import 'package:assyifa_chatbot/services/auth.dart';
+import 'package:assyifa_chatbot/services/routes.dart';
 import 'package:assyifa_chatbot/views/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -61,14 +62,11 @@ class MyApp extends StatelessWidget {
               Theme.of(context).textTheme,
             ),
             appBarTheme: AppBarTheme(
-              textTheme: TextTheme(
-                headline6: GoogleFonts.poppins(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600
-                )
-              )
-            ),
+                textTheme: TextTheme(
+                    headline6: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600))),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
                 onPrimary: Colors.white,
@@ -78,6 +76,7 @@ class MyApp extends StatelessWidget {
             textSelectionTheme:
                 TextSelectionThemeData(selectionColor: Color(0xFFD0F3FC))),
         home: Wrapper(),
+        routes: routes,
       ),
     );
   }

@@ -81,11 +81,13 @@ class _EditJournalState extends State<EditJournal> {
       final iv = encrypt.IV.fromLength(8);
       final encryptor = encrypt.Encrypter(encrypt.Salsa20(key));
 
-      String journalTitle = encryptor.encrypt(_titleController.text, iv: iv).base64;
-      String journalContent = encryptor.encrypt(_contentController.text, iv: iv).base64;
+      String journalTitle =
+          encryptor.encrypt(_titleController.text, iv: iv).base64;
+      String journalContent =
+          encryptor.encrypt(_contentController.text, iv: iv).base64;
 
       JournalModel journalModel =
-      JournalModel(widget.journal.docId, journalTitle, journalContent);
+          JournalModel(widget.journal.docId, journalTitle, journalContent);
       try {
         await DatabaseService(uid: this._uid).editJournal(journalModel);
         _showToast('Jurnal berhasil diubah!', 'success');
@@ -147,7 +149,6 @@ class _EditJournalState extends State<EditJournal> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setCurrentUserData();
     fToast = FToast();
@@ -157,8 +158,10 @@ class _EditJournalState extends State<EditJournal> {
     final iv = encrypt.IV.fromLength(8);
     final encryptor = encrypt.Encrypter(encrypt.Salsa20(key));
 
-    encrypt.Encrypted encryptedTitle = encrypt.Encrypted.fromBase64(widget.journal.title);
-    encrypt.Encrypted encryptedContent = encrypt.Encrypted.fromBase64(widget.journal.content);
+    encrypt.Encrypted encryptedTitle =
+        encrypt.Encrypted.fromBase64(widget.journal.title);
+    encrypt.Encrypted encryptedContent =
+        encrypt.Encrypted.fromBase64(widget.journal.content);
     String journalTitle = encryptor.decrypt(encryptedTitle, iv: iv);
     String journalContent = encryptor.decrypt(encryptedContent, iv: iv);
 
@@ -168,77 +171,81 @@ class _EditJournalState extends State<EditJournal> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading ? Loading() : Scaffold(
-      appBar: AppBar(
-        title: Text('Ubah Jurnal'),
-        actions: [
-          InkWell(
-            onTap: () {
-              showDeletionDialog(widget.journal);
-            },
-            borderRadius: BorderRadius.circular(100),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Icon(Icons.delete),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: CustomButton('Ubah Jurnal', () {
-          editJournal();
-        }),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: _titleController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    hintText: 'Judul',
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                  ),
-                ),
-                TextFormField(
-                  controller: _contentController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  validator: (value) => value.toString().trim().isEmpty ? 'Jurnal tidak boleh kosong' : null,
-                  decoration: InputDecoration(
-                    hintText: 'Tuliskan jurnalmu di sini',
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
-                    border: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
-                    ),
+    return _isLoading
+        ? Loading()
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Ubah Jurnal'),
+              actions: [
+                InkWell(
+                  onTap: () {
+                    showDeletionDialog(widget.journal);
+                  },
+                  borderRadius: BorderRadius.circular(100),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Icon(Icons.delete),
                   ),
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
+            bottomNavigationBar: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: CustomButton('Ubah Jurnal', () {
+                editJournal();
+              }),
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: _titleController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        decoration: InputDecoration(
+                          hintText: 'Judul',
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: _contentController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        validator: (value) => value.toString().trim().isEmpty
+                            ? 'Jurnal tidak boleh kosong'
+                            : null,
+                        decoration: InputDecoration(
+                          hintText: 'Tuliskan jurnalmu di sini',
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.transparent),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
   }
 }

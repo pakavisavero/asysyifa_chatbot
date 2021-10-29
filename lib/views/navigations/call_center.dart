@@ -11,8 +11,8 @@ class CallCenter extends StatefulWidget {
   _CallCenterState createState() => _CallCenterState();
 }
 
-class _CallCenterState extends State<CallCenter> with AutomaticKeepAliveClientMixin<CallCenter> {
-
+class _CallCenterState extends State<CallCenter>
+    with AutomaticKeepAliveClientMixin<CallCenter> {
   @override
   bool get wantKeepAlive => true;
 
@@ -31,9 +31,9 @@ class _CallCenterState extends State<CallCenter> with AutomaticKeepAliveClientMi
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     List<CallCenterModel> callCenterList = [];
     Color darkBlue = const Color(0xFF053742);
 
@@ -46,14 +46,15 @@ class _CallCenterState extends State<CallCenter> with AutomaticKeepAliveClientMi
           return Text('Something went wrong');
         }
 
-        if (!snapshot.hasData) _isLoading = true;
+        if (!snapshot.hasData)
+          _isLoading = true;
         else {
           List<CallCenterModel> tempList = [];
 
           for (int i = 0; i < snapshot.data.documents.length; i++) {
             final DocumentSnapshot document = snapshot.data.documents[i];
-            tempList.add(CallCenterModel(document['name'],
-                document['phone'], document['image']));
+            tempList.add(CallCenterModel(
+                document['name'], document['phone'], document['image']));
           }
 
           _isLoading = false;
@@ -61,60 +62,66 @@ class _CallCenterState extends State<CallCenter> with AutomaticKeepAliveClientMi
           print(_isLoading);
         }
 
-        return _isLoading ? Loading() : SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: List.generate(callCenterList.length, (index) {
-                CallCenterModel callCenterModel = callCenterList[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Card(
-                    child: InkWell(
-                      onTap: () => _launchCaller(callCenterModel.phone),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 5.0, right: 15.0, bottom: 5.0, left: 5.0),
-                              child: Container(
-                                width: 45.0,
-                                height: 45.0,
-                                child: CircleAvatar(
-                                  backgroundImage:
-                                  NetworkImage(callCenterModel.image),
-                                ),
+        return _isLoading
+            ? Loading()
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(callCenterList.length, (index) {
+                      CallCenterModel callCenterModel = callCenterList[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 5.0),
+                        child: Card(
+                          child: InkWell(
+                            onTap: () => _launchCaller(callCenterModel.phone),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 5.0,
+                                        right: 15.0,
+                                        bottom: 5.0,
+                                        left: 5.0),
+                                    child: Container(
+                                      width: 45.0,
+                                      height: 45.0,
+                                      child: CircleAvatar(
+                                        backgroundImage:
+                                            NetworkImage(callCenterModel.image),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                      child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(callCenterModel.name,
+                                          style: TextStyle(
+                                              color: darkBlue,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14.0)),
+                                      Text(callCenterModel.phone,
+                                          style: TextStyle(
+                                              color: darkBlue, fontSize: 12.0)),
+                                    ],
+                                  )),
+                                ],
                               ),
                             ),
-                            Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(callCenterModel.name,
-                                        style: TextStyle(
-                                            color: darkBlue,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14.0)),
-                                    Text(callCenterModel.phone,
-                                        style:
-                                        TextStyle(color: darkBlue, fontSize: 12.0)),
-                                  ],
-                                )),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    }),
                   ),
-                );
-              }),
-            ),
-          ),
-        );
+                ),
+              );
       },
     );
   }
